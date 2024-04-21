@@ -29,3 +29,5 @@ namespace ContosoUniversity
 
             services.AddControllersWithViews();
         }
+    }
+}

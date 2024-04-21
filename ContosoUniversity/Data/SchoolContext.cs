@@ -20,4 +20,5 @@ namespace ContosoUniversity.Data
             modelBuilder.Entity<Student>().ToTable("Student");
         }
     }
+
 }

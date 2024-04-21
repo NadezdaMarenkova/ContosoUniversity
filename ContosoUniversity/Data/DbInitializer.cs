@@ -5,11 +5,6 @@ using System.Linq;
 namespace ContosoUniversity.Data
 {
 
-    /*The preceding code checks if the database exists:
-     * If the database is not found;
-     * It is created and loaded with test data. It loads test data into arrays rather than List<T> collections to optimize performance.
-     * If the database is found, it takes no action.
-    */
     public static class DbInitializer
     {
         public static void Initialize(SchoolContext context)
