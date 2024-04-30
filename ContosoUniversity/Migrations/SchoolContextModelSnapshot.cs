@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace ContosoUniversity.Migrations
 {
     [DbContext(typeof(SchoolContext))]
@@ -15,9 +17,10 @@ namespace ContosoUniversity.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.17")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.29")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("ContosoUniversity.Models.Course", b =>
                 {
@@ -31,6 +34,7 @@ namespace ContosoUniversity.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -38,7 +42,7 @@ namespace ContosoUniversity.Migrations
 
                     b.HasIndex("DepartmentID");
 
-                    b.ToTable("Course");
+                    b.ToTable("Course", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.CourseAssignment", b =>
@@ -53,15 +57,16 @@ namespace ContosoUniversity.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("CourseAssignment");
+                    b.ToTable("CourseAssignment", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Department", b =>
                 {
                     b.Property<int>("DepartmentID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DepartmentID"), 1L, 1);
 
                     b.Property<decimal>("Budget")
                         .HasColumnType("money");
@@ -70,11 +75,13 @@ namespace ContosoUniversity.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
+                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -85,18 +92,22 @@ namespace ContosoUniversity.Migrations
 
                     b.HasIndex("InstructorID");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Department", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Enrollment", b =>
                 {
                     b.Property<int>("EnrollmentID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EnrollmentID"), 1L, 1);
 
                     b.Property<int>("CourseID")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("Grade")
                         .HasColumnType("int");
@@ -110,15 +121,16 @@ namespace ContosoUniversity.Migrations
 
                     b.HasIndex("StudentID");
 
-                    b.ToTable("Enrollment");
+                    b.ToTable("Enrollment", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Instructor", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("FirstMidName")
                         .IsRequired()
@@ -136,7 +148,7 @@ namespace ContosoUniversity.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Instructor");
+                    b.ToTable("Instructor", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.OfficeAssignment", b =>
@@ -145,20 +157,22 @@ namespace ContosoUniversity.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
                     b.HasKey("InstructorID");
 
-                    b.ToTable("OfficeAssignment");
+                    b.ToTable("OfficeAssignment", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Student", b =>
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<DateTime>("EnrollmentDate")
                         .HasColumnType("datetime2");
@@ -176,7 +190,7 @@ namespace ContosoUniversity.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("Student");
+                    b.ToTable("Student", (string)null);
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Course", b =>
@@ -264,7 +278,8 @@ namespace ContosoUniversity.Migrations
                 {
                     b.Navigation("CourseAssignments");
 
-                    b.Navigation("OfficeAssignment");
+                    b.Navigation("OfficeAssignment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ContosoUniversity.Models.Student", b =>

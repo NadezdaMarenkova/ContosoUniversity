@@ -58,6 +58,18 @@ namespace ContosoUniversity
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            InitializeDatabase(app);
+
+
+        }
+        private void InitializeDatabase(IApplicationBuilder app)
+        {
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var context = serviceProvider.GetRequiredService<SchoolContext>();
+                DbInitializer.Initialize(context);
+            }
         }
     }
 }

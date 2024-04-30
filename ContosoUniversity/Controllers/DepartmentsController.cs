@@ -29,18 +29,14 @@ namespace ContosoUniversity.Controllers
         // GET: Departments/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Departments == null)
             {
                 return NotFound();
             }
 
-            //var department = await _context.Departments
-            //    .Include(d => d.Administrator)
-            //    .FirstOrDefaultAsync(m => m.DepartmentID == id);
             var department = await _context.Departments
-    .Include(i => i.Administrator)
-    .AsNoTracking()
-    .FirstOrDefaultAsync(m => m.DepartmentID == id);
+                .Include(d => d.Administrator)
+                .FirstOrDefaultAsync(m => m.DepartmentID == id);
             if (department == null)
             {
                 return NotFound();
@@ -52,8 +48,7 @@ namespace ContosoUniversity.Controllers
         // GET: Departments/Create
         public IActionResult Create()
         {
-            //ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FirstMidName");
-            ViewData["InstructorId"] = new SelectList(_context.Instructors, "ID", "FullName");
+            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName");
             return View();
         }
 
@@ -64,75 +59,36 @@ namespace ContosoUniversity.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("DepartmentID,Name,Budget,StartDate,InstructorID,RowVersion")] Department department)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(department);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FirstMidName", department.InstructorID);
-            ViewData["InstructorId"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
+            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
             return View(department);
         }
 
         // GET: Departments/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Departments == null)
             {
                 return NotFound();
             }
 
-            //var department = await _context.Departments.FindAsync(id);
-            var department = await _context.Departments
-    .Include(i => i.Administrator)
-    .AsNoTracking()
-    .FirstOrDefaultAsync(m => m.DepartmentID == id);
+            var department = await _context.Departments.FindAsync(id);
             if (department == null)
             {
                 return NotFound();
             }
-            //ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FirstMidName", department.InstructorID);
-            ViewData["InstructorId"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
+            ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
             return View(department);
         }
 
         // POST: Departments/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("DepartmentID,Name,Budget,StartDate,InstructorID,RowVersion")] Department department)
-        //{
-        //    if (id != department.DepartmentID)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(department);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!DepartmentExists(department.DepartmentID))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    //ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FirstMidName", department.InstructorID);
-        //    ViewData["InstructorId"] = new SelectList(_context.Instructors, "ID", "FullName", department.InstructorID);
-        //    return View(department);
-        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, byte[] rowVersion)
@@ -156,7 +112,7 @@ namespace ContosoUniversity.Controllers
 
             _context.Entry(departmentToUpdate).Property("RowVersion").OriginalValue = rowVersion;
 
-            if (await TryUpdateModelAsync<Department>(
+            if (!await TryUpdateModelAsync<Department>(
                 departmentToUpdate,
                 "",
                 s => s.Name, s => s.StartDate, s => s.Budget, s => s.InstructorID))
@@ -211,27 +167,11 @@ namespace ContosoUniversity.Controllers
             ViewData["InstructorID"] = new SelectList(_context.Instructors, "ID", "FullName", departmentToUpdate.InstructorID);
             return View(departmentToUpdate);
         }
+
         // GET: Departments/Delete/5
-        //public async Task<IActionResult> Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var department = await _context.Departments
-        //        .Include(d => d.Administrator)
-        //        .FirstOrDefaultAsync(m => m.DepartmentID == id);
-        //    if (department == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    return View(department);
-        //}
         public async Task<IActionResult> Delete(int? id, bool? concurrencyError)
         {
-            if (id == null)
+            if (id == null || _context.Departments == null)
             {
                 return NotFound();
             }
@@ -248,7 +188,6 @@ namespace ContosoUniversity.Controllers
                 }
                 return NotFound();
             }
-
             if (concurrencyError.GetValueOrDefault())
             {
                 ViewData["ConcurrencyErrorMessage"] = "The record you attempted to delete "
@@ -259,18 +198,11 @@ namespace ContosoUniversity.Controllers
                     + "click the Back to List hyperlink.";
             }
 
+
             return View(department);
         }
+
         // POST: Departments/Delete/5
-        //[HttpPost, ActionName("Delete")]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> DeleteConfirmed(int id)
-        //{
-        //    var department = await _context.Departments.FindAsync(id);
-        //    _context.Departments.Remove(department);
-        //    await _context.SaveChangesAsync();
-        //    return RedirectToAction(nameof(Index));
-        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Department department)
@@ -279,6 +211,7 @@ namespace ContosoUniversity.Controllers
             {
                 if (await _context.Departments.AnyAsync(m => m.DepartmentID == department.DepartmentID))
                 {
+
                     _context.Departments.Remove(department);
                     await _context.SaveChangesAsync();
                 }
@@ -293,7 +226,7 @@ namespace ContosoUniversity.Controllers
 
         private bool DepartmentExists(int id)
         {
-            return _context.Departments.Any(e => e.DepartmentID == id);
+            return (_context.Departments?.Any(e => e.DepartmentID == id)).GetValueOrDefault();
         }
     }
 }
